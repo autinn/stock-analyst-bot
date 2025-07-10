@@ -61,7 +61,7 @@
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "MqQgx2JFrx4voHVtbGiZm9DpFiAS2Q5x6nQRJfnk "
+              "value": "you_own_api_key "
             },
             {
               "name": "content-type",
@@ -121,7 +121,7 @@
       "webhookId": "afc11331-8a49-4b76-b15d-fa9faff11ce6",
       "credentials": {
         "telegramApi": {
-          "id": "BjmAW6o3S5sVhNj1",
+          "id": "you_own_id",
           "name": "Telegram account 4"
         }
       }
@@ -174,7 +174,7 @@
       "name": "technical analysis",
       "credentials": {
         "openAiApi": {
-          "id": "4TZykSJ4dSNJ480m",
+          "id": "you_own_id",
           "name": "OpenAi account 12"
         }
       }
