@@ -1,0 +1,273 @@
+{
+  "name": "GetChart",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "ticker"
+            },
+            {
+              "name": "chart_style"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a92e75be-515f-4279-97a7-57fa2031c525",
+              "name": "ticker",
+              "value": "={{ $json.ticker }}",
+              "type": "string"
+            },
+            {
+              "id": "283577c0-619e-4741-b238-f1b4a84c3151",
+              "name": "chart_style",
+              "value": "={{$json.chart_style }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        340
+      ],
+      "id": "a83b3a29-9992-4e8c-a2ba-0480219b6693",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.chart-img.com/v2/tradingview/advanced-chart/storage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "MqQgx2JFrx4voHVtbGiZm9DpFiAS2Q5x6nQRJfnk "
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"height\": 300,\n  \"theme\": \"dark\",\n  \"interval\": \"15m\",\n  \"session\": \"extended\",\n  \"symbol\": \"NASDAQ:{{ $json.ticker }}\",\n  \"timezone\": \"America/New_York\",\n  \"style\": \"{{ $json.chart_style }}\",\n  \"studies\": [\n    {\n      \"name\": \"Volume\",\n      \"forceOverlay\": true\n    },\n    {\n      \"name\": \"Relative Strength Index\"\n    },\n    {\n      \"name\": \"Stochastic RSI\"\n    }\n  ]\n} ",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        340
+      ],
+      "id": "9052a6cb-4ecc-46a4-b96f-a59ee70363e3",
+      "name": "GetChart"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        920,
+        340
+      ],
+      "id": "f80cbc4a-2161-4f65-95d1-3cd915cffad3",
+      "name": "Download Chart"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "6209601629",
+        "file": "={{ $('GetChart').item.json.url }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1340,
+        340
+      ],
+      "id": "1e9c2661-56fd-4f46-93e4-c5c97a92f39b",
+      "name": "Send Chart",
+      "webhookId": "afc11331-8a49-4b76-b15d-fa9faff11ce6",
+      "credentials": {
+        "telegramApi": {
+          "id": "BjmAW6o3S5sVhNj1",
+          "name": "Telegram account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d38bad0d-948b-43b8-ab9c-22b3cf326b1b",
+              "name": "response",
+              "value": "={{ $('technical analysis').item.json.choices[0].message.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1560,
+        340
+      ],
+      "id": "ee4df9ff-dbd1-46ea-bc4e-5b67cb5e04af",
+      "name": "response"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "# Professional Role\n\nYou are a financial analyst, speicalizing in the interpretive analysis of stock charts. Your primary responsibility is to scrutinize provided financial chart and deliver comprehensive assessments of their technical dimensions. This includes examining candlestick formations, Moving Average Convergence Divergence (MACD) metrics, trading volume patterns, **Relative Strength Index (RSI), Stochastic RSI, and prevailing market sentiment. Your analysis should be a thorough dissection of the chart, pinpointing critical areas and offering practical insights. \n\nWhen evaluating a stock chart, ensure the inclusion of the following:\n\n1. **Candlestick Pattern integerpretation**: \n- Recognize and articulate the significance of any notable candlestick formation (e.g. bullish engulfing, doji, hammer). \n- Provide commentary on th eprevailing market direction (upward, downward, or lateral)\n- Identify potential zones for price surges or retracements. \n\n2. Relative Strength Index (RSI) exmaination: \n- **Extract the numerical RSI value from the chart.**\n- Describe the current RSI value and its market positioning (e.g. overbought, oversold, neutral) based on the extracted value  \n- Explain how the extracted RSI value and its trend either support or oppose the ongoing price trend. \n- Identify any divergences between RSI values and price movement that can be discerned from the chart. \n\n3. **Stochastic RSI** \n- Extract the numerical values of the stochastic RSI's K and D lines from the chart \n- detail the present values of the K and D lines based on the extracted numerical data \n- analyze any crossovers or divergences observed between the K and D lines based on the extracted values and their visual representation. \n  ",
+        "inputType": "base64",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1120,
+        340
+      ],
+      "id": "1e7100b5-faed-445d-9415-a64bf787d157",
+      "name": "technical analysis",
+      "credentials": {
+        "openAiApi": {
+          "id": "4TZykSJ4dSNJ480m",
+          "name": "OpenAi account 12"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Workflow Input Trigger": [
+      {
+        "json": {
+          "ticker": "AAPL",
+          "chart_style": "bar"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "GetChart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetChart": {
+      "main": [
+        [
+          {
+            "node": "Download Chart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Chart": {
+      "main": [
+        [
+          {
+            "node": "technical analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Chart": {
+      "main": [
+        [
+          {
+            "node": "response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "technical analysis": {
+      "main": [
+        [
+          {
+            "node": "Send Chart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "49ae9da4-666a-4bf7-981f-53823688a4b6",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ecc890ad3f09697580f769285510e09aa2925ca39546e6cd9df80cc41f8793e3"
+  },
+  "id": "UOj0bqm60IkbKNv4",
+  "tags": []
+}
